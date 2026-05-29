@@ -15,3 +15,7 @@ __pycache__/
 
 # Environment variables
 .env
+
+# Local project folders
+tests/
+scripts/
