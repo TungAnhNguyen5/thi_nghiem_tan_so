@@ -6,6 +6,7 @@ Small signal-processing practice workspace with four mini projects:
 - `2_uav_spectrogram/` - renders spectrograms from interleaved float32 IQ `.dat` files
 - `3_simple_feature_extraction/` - extracts signal power, bandwidth, and entropy from IQ `.dat` files
 - `4_pca_visualization/` - applies PCA to synthetic UAV RF feature vectors and plots class clusters
+- `5_unsupervised_clustering/` - windows IQ captures, extracts features, and clusters them without labels
 
 ## Requirements
 
@@ -45,12 +46,21 @@ cd 4_pca_visualization
 python pca_visualizer.py
 ```
 
+Unsupervised clustering:
+
+```bash
+cd 5_unsupervised_clustering
+python main.py ../3_simple_feature_extraction/output
+```
+
 ## Output
 
 - `1_fft_visualizer/fft_visualizer.png`
 - `2_uav_spectrogram/output/*.png`
 - `3_simple_feature_extraction/output/*.csv`
 - `4_pca_visualization/pca_clusters.png`
+- `5_unsupervised_clustering/output/*.csv`
+- `5_unsupervised_clustering/output/*.png`
 
 ## Notes
 

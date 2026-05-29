@@ -7,29 +7,29 @@ from sklearn.preprocessing import StandardScaler
 
 # CREATE SYNTHETIC UAV FEATURES
 
-np.random.seed(42)
+np.random.seed(49)
 
-samples_per_class = 100
+samples_per_class = 200
 
 # Drone A features
 drone_a = np.random.normal(
     loc=0.0,
     scale=1.0,
-    size=(samples_per_class, 10)
+    size=(samples_per_class, 20)
 )
 
 # Drone B features
 drone_b = np.random.normal(
     loc=4.0,
     scale=1.2,
-    size=(samples_per_class, 10)
+    size=(samples_per_class, 20)
 )
 
 # Drone C features
 drone_c = np.random.normal(
     loc=-3.0,
     scale=0.8,
-    size=(samples_per_class, 10)
+    size=(samples_per_class, 20)
 )
 
 # Combine all samples
