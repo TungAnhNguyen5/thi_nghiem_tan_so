@@ -1,10 +1,11 @@
 # `thi_nghiem_tan_so`
 
-Small signal-processing practice workspace with three mini projects:
+Small signal-processing practice workspace with four mini projects:
 
-- `fft_visualizer/` - generates a noisy sine-wave FFT plot
-- `uav_spectrogram/` - renders spectrograms from interleaved float32 IQ `.dat` files
-- `simple_feature_extraction/` - extracts signal power, bandwidth, and entropy from IQ `.dat` files
+- `1_fft_visualizer/` - generates a noisy sine-wave FFT plot
+- `2_uav_spectrogram/` - renders spectrograms from interleaved float32 IQ `.dat` files
+- `3_simple_feature_extraction/` - extracts signal power, bandwidth, and entropy from IQ `.dat` files
+- `4_pca_visualization/` - applies PCA to synthetic UAV RF feature vectors and plots class clusters
 
 ## Requirements
 
@@ -19,31 +20,39 @@ source /workspaces/codespaces-blank/thi_nghiem_tan_so/.venv/bin/activate
 FFT visualizer:
 
 ```bash
-cd fft_visualizer
+cd 1_fft_visualizer
 python fft_visualizer.py
 ```
 
 UAV spectrogram:
 
 ```bash
-cd uav_spectrogram
+cd 2_uav_spectrogram
 python main.py
 ```
 
 Feature extraction:
 
 ```bash
-cd simple_feature_extraction
-python main.py ../uav_spectrogram
+cd 3_simple_feature_extraction
+python main.py ../2_uav_spectrogram
+```
+
+PCA visualization:
+
+```bash
+cd 4_pca_visualization
+python pca_visualizer.py
 ```
 
 ## Output
 
-- `fft_visualizer/fft_visualizer.png`
-- `uav_spectrogram/output/*.png`
-- `simple_feature_extraction/output/*.csv`
+- `1_fft_visualizer/fft_visualizer.png`
+- `2_uav_spectrogram/output/*.png`
+- `3_simple_feature_extraction/output/*.csv`
+- `4_pca_visualization/pca_clusters.png`
 
 ## Notes
 
 - IQ files are stored as interleaved float32 values: real, imag, real, imag, ...
-- `simple_feature_extraction` writes one CSV per input file using the same stem name.
+- `3_simple_feature_extraction` writes one CSV per input file using the same stem name.
