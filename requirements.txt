@@ -3,3 +3,6 @@ matplotlib
 scikit-learn
 pytest
 flake8
+imageio
+imageio-ffmpeg
+pillow
