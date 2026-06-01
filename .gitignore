@@ -13,8 +13,20 @@ __pycache__/
 # VS Code settings (optional)
 .vscode/
 
+
 # Environment variables
 .env
 
-# Local project folderss
-scripts/
+# Logs
+*.log
+
+# package distribution
+dist/
+build/
+*.egg-info/
+node_modules/
+package-lock.json
+package.json
+
+
+
