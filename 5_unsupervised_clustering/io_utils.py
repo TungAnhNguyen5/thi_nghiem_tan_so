@@ -38,8 +38,21 @@ def write_window_csv(
 ) -> None:
     with output_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["input_file", "window_index", "window_time_s", *FEATURE_NAMES, "cluster_label"])
-        for window_index, window_time, row, label in zip(frame_indices, frame_times, features, labels):
+        writer.writerow(
+            [
+                "input_file",
+                "window_index",
+                "window_time_s",
+                *FEATURE_NAMES,
+                "cluster_label",
+            ]
+        )
+        for window_index, window_time, row, label in zip(
+            frame_indices,
+            frame_times,
+            features,
+            labels,
+        ):
             writer.writerow(
                 [
                     input_name,

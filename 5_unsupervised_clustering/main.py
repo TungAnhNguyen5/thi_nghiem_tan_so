@@ -5,12 +5,10 @@ import sys
 from pathlib import Path
 
 # NOTE: tests import this file directly by path using importlib.
-# Ensure the folder containing this script is on sys.path so sibling-module imports work.
+# Ensure sibling-module imports work when run by path.
 _THIS_DIR = Path(__file__).resolve().parent
 if str(_THIS_DIR) not in sys.path:
     sys.path.insert(0, str(_THIS_DIR))
-
-import numpy as np  # noqa: E402
 
 from clustering import (  # noqa: E402
     choose_cluster_count,
@@ -19,7 +17,11 @@ from clustering import (  # noqa: E402
     scale_features,
 )
 from features import FEATURE_NAMES, build_feature_matrix  # noqa: E402
-from io_utils import load_iq, resolve_input_paths, write_window_csv  # noqa: E402
+from io_utils import (  # noqa: E402
+    load_iq,
+    resolve_input_paths,
+    write_window_csv,
+)
 from viz import plot_clusters, project_for_plot  # noqa: E402
 
 # Backwards-compatible alias for tests/previous code.
@@ -28,17 +30,38 @@ _fit_clusterer = fit_clusterer
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Window IQ data, extract features, and cluster windows without labels"
+        description=(
+            "Window IQ data, extract features, and cluster windows "
+            "without labels"
+        )
     )
     parser.add_argument(
         "input",
         nargs="?",
         default=".",
-        help="Path to an IQ .dat file or directory; defaults to all .dat files in the current folder",
+        help=(
+            "Path to an IQ .dat file or directory; defaults to all .dat "
+            "files in the current folder"
+        ),
     )
-    parser.add_argument("--fs", type=float, default=1_000_000, help="Sample rate in Hz")
-    parser.add_argument("--window-size", type=int, default=4096, help="Window size in samples")
-    parser.add_argument("--hop-size", type=int, default=2048, help="Hop size between windows in samples")
+    parser.add_argument(
+        "--fs",
+        type=float,
+        default=1_000_000,
+        help="Sample rate in Hz",
+    )
+    parser.add_argument(
+        "--window-size",
+        type=int,
+        default=4096,
+        help="Window size in samples",
+    )
+    parser.add_argument(
+        "--hop-size",
+        type=int,
+        default=2048,
+        help="Hop size between windows in samples",
+    )
     parser.add_argument(
         "--algorithm",
         choices=("kmeans", "gmm", "dbscan", "hdbscan"),
@@ -48,12 +71,34 @@ def main() -> None:
     parser.add_argument(
         "--cluster-count",
         default="auto",
-        help='Number of clusters for kmeans/gmm, or "auto" to select the best value with silhouette score',
+        help=(
+            'Number of clusters for kmeans/gmm, or "auto" to select the '
+            "best value with silhouette score"
+        ),
     )
-    parser.add_argument("--dbscan-eps", type=float, default=0.9, help="DBSCAN epsilon in scaled feature space")
-    parser.add_argument("--min-samples", type=int, default=4, help="Minimum samples for DBSCAN/HDBSCAN")
-    parser.add_argument("--output-dir", default="output", help="Directory for generated CSV and PNG files")
-    parser.add_argument("--random-state", type=int, default=42, help="Random seed for clustering")
+    parser.add_argument(
+        "--dbscan-eps",
+        type=float,
+        default=0.9,
+        help="DBSCAN epsilon in scaled feature space",
+    )
+    parser.add_argument(
+        "--min-samples",
+        type=int,
+        default=4,
+        help="Minimum samples for DBSCAN/HDBSCAN",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="output",
+        help="Directory for generated CSV and PNG files",
+    )
+    parser.add_argument(
+        "--random-state",
+        type=int,
+        default=42,
+        help="Random seed for clustering",
+    )
     args = parser.parse_args()
 
     input_paths = resolve_input_paths(args.input)
@@ -74,7 +119,10 @@ def main() -> None:
         scaled_features = scale_features(features)
 
         cluster_count: int | None
-        if args.algorithm in {"kmeans", "gmm"} and args.cluster_count == "auto":
+        if (
+            args.algorithm in {"kmeans", "gmm"}
+            and args.cluster_count == "auto"
+        ):
             cluster_count, silhouette = choose_cluster_count(
                 scaled_features,
                 algorithm=args.algorithm,
@@ -83,8 +131,13 @@ def main() -> None:
             if cluster_count is None:
                 cluster_count = 2
             print(
-                f"{input_path.name}: selected {cluster_count} clusters for {args.algorithm}"
-                + (f" (silhouette={silhouette:.3f})" if silhouette is not None else "")
+                f"{input_path.name}: selected {cluster_count} clusters for "
+                f"{args.algorithm}"
+                + (
+                    f" (silhouette={silhouette:.3f})"
+                    if silhouette is not None
+                    else ""
+                )
             )
         elif args.algorithm in {"kmeans", "gmm"}:
             cluster_count = int(args.cluster_count)
@@ -101,9 +154,14 @@ def main() -> None:
         )
 
         summary = format_cluster_summary(labels)
-        print(f"{input_path.name}: {args.algorithm} labels -> {summary}")
+        print(
+            f"{input_path.name}: {args.algorithm} labels -> {summary}"
+        )
 
-        csv_output = output_dir / f"{input_path.stem}_{args.algorithm}_windows.csv"
+        csv_output = (
+            output_dir
+            / f"{input_path.stem}_{args.algorithm}_windows.csv"
+        )
         write_window_csv(
             csv_output,
             input_name=input_path.name,
@@ -114,12 +172,17 @@ def main() -> None:
         )
 
         embedding = project_for_plot(scaled_features)
-        plot_output = output_dir / f"{input_path.stem}_{args.algorithm}_clusters.png"
+        plot_output = (
+            output_dir
+            / f"{input_path.stem}_{args.algorithm}_clusters.png"
+        )
         plot_clusters(
             embedding,
             labels,
             plot_output,
-            title=f"{input_path.stem} - {args.algorithm.upper()} clustering",
+            title=(
+                f"{input_path.stem} - {args.algorithm.upper()} clustering"
+            ),
         )
 
         print(f"Wrote {csv_output}")

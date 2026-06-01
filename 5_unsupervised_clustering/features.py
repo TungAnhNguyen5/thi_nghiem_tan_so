@@ -19,11 +19,17 @@ FEATURE_NAMES = [
 ]
 
 
-def occupied_bandwidth(iq: np.ndarray, fs: float, occupancy: float = 0.99) -> float:
+def occupied_bandwidth(
+    iq: np.ndarray,
+    fs: float,
+    occupancy: float = 0.99,
+) -> float:
     if not 0 < occupancy < 1:
         raise ValueError("occupancy must be between 0 and 1")
     if iq.size < 2:
-        raise ValueError("IQ capture is too short to estimate bandwidth")
+        raise ValueError(
+            "IQ capture is too short to estimate bandwidth"
+        )
 
     window = np.hanning(iq.size).astype(np.float64)
     spectrum = np.fft.fftshift(np.fft.fft(iq * window))
@@ -50,7 +56,11 @@ def extract_features(frame: np.ndarray, fs: float) -> np.ndarray:
     power = magnitude**2
     mean_power = float(np.mean(power))
     rms_amplitude = float(np.sqrt(mean_power))
-    crest_factor = float(np.max(magnitude) / rms_amplitude) if rms_amplitude > 0 else 0.0
+    crest_factor = (
+        float(np.max(magnitude) / rms_amplitude)
+        if rms_amplitude > 0
+        else 0.0
+    )
 
     window = np.hanning(frame.size).astype(np.float64)
     spectrum = np.fft.fftshift(np.fft.fft(frame * window))
@@ -60,12 +70,28 @@ def extract_features(frame: np.ndarray, fs: float) -> np.ndarray:
 
     if power_sum > 0:
         probabilities = spectral_power / power_sum
-        spectral_centroid_hz = float(np.sum(frequencies * probabilities))
-        spectral_spread_hz = float(np.sqrt(np.sum(((frequencies - spectral_centroid_hz) ** 2) * probabilities)))
-        peak_frequency_hz = float(frequencies[int(np.argmax(spectral_power))])
+        spectral_centroid_hz = float(
+            np.sum(frequencies * probabilities)
+        )
+        spectral_spread_hz = float(
+            np.sqrt(
+                np.sum(
+                    ((frequencies - spectral_centroid_hz) ** 2) * probabilities
+                )
+            )
+        )
+        peak_frequency_hz = float(
+            frequencies[int(np.argmax(spectral_power))]
+        )
         probability_nz = probabilities[probabilities > 0]
-        spectral_entropy = float(-np.sum(probability_nz * np.log2(probability_nz)) / np.log2(frame.size))
-        spectral_flatness = float(np.exp(np.mean(np.log(spectral_power + 1e-12))) / np.mean(spectral_power))
+        spectral_entropy = float(
+            -np.sum(probability_nz * np.log2(probability_nz))
+            / np.log2(frame.size)
+        )
+        spectral_flatness = float(
+            np.exp(np.mean(np.log(spectral_power + 1e-12)))
+            / np.mean(spectral_power)
+        )
     else:
         spectral_centroid_hz = 0.0
         spectral_spread_hz = 0.0
@@ -74,7 +100,9 @@ def extract_features(frame: np.ndarray, fs: float) -> np.ndarray:
         spectral_flatness = 0.0
 
     phase_diff = np.angle(frame[1:] * np.conj(frame[:-1]))
-    phase_diff_std = float(np.std(phase_diff)) if phase_diff.size else 0.0
+    phase_diff_std = (
+        float(np.std(phase_diff)) if phase_diff.size else 0.0
+    )
     bandwidth_hz = occupied_bandwidth(frame, fs=fs)
 
     return np.array(

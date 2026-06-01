@@ -19,9 +19,10 @@ def simulate_doppler(
 ) -> tuple[np.ndarray, np.ndarray]:
     """Simulate a complex baseband signal from a source moving in 2D.
 
-    The source moves along the x-axis at constant speed `v` with y=closest_approach.
-    The observer is at the origin. Doppler-shifted frequency is computed from radial
-    velocity using f_obs = f0 * c / (c - v_r).
+    The source moves along the x-axis at constant speed `v` with
+    y=closest_approach. The observer is at the origin. Doppler-shifted
+    frequency is computed from radial velocity using f_obs = f0 * c / (c -
+    v_r).
 
     Returns:
         iq: complex64 IQ samples
@@ -31,7 +32,8 @@ def simulate_doppler(
     n = int(np.floor(fs * duration))
     t = np.arange(n) / fs
 
-    # Place the source so it passes nearest to the origin near the middle of the record
+    # Place the source so it passes nearest to the origin near the middle
+    # of the record
     x0 = -v * duration / 2.0
 
     # Position over time for moving object
@@ -64,7 +66,11 @@ def simulate_doppler(
             if end_idx <= start_idx:
                 continue
             tt = t[start_idx:end_idx] - pt
-            chirp_inst = f_obs[start_idx:end_idx] + np.linspace(-chirp_span / 2, chirp_span / 2, tt.size)
+            chirp_inst = f_obs[start_idx:end_idx] + np.linspace(
+                -chirp_span / 2,
+                chirp_span / 2,
+                tt.size,
+            )
             chirp_phase = 2 * np.pi * np.cumsum(chirp_inst) / fs
             window = np.hanning(tt.size)
             chirp_sig[start_idx:end_idx] += window * np.exp(1j * chirp_phase)
@@ -74,17 +80,24 @@ def simulate_doppler(
 
         sig = (0.6 * carrier + 0.3 * chirp_sig) * rotor_env
 
-    # Add Gaussian noise according to SNR in dB (power relative to signal power)
+    # Add Gaussian noise according to SNR in dB (power relative to signal
+    # power)
     sig_power = np.mean(np.abs(sig) ** 2)
     snr_linear = 10 ** (snr_db / 10.0)
     noise_power = sig_power / snr_linear
-    noise = np.sqrt(noise_power / 2) * (np.random.normal(size=sig.shape) + 1j * np.random.normal(size=sig.shape))
+    noise = np.sqrt(noise_power / 2) * (
+        np.random.normal(size=sig.shape)
+        + 1j * np.random.normal(size=sig.shape)
+    )
     iq = (sig + noise).astype(np.complex64)
     return iq, f_obs
 
 
-def build_scene_components(args, t: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Create stationary, moving, blades, combined IQ and moving instantaneous f_obs (Hz)."""
+def build_scene_components(
+    args,
+    t: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Create stationary, moving, blades, combined IQ and f_obs (Hz)."""
     stationary = args.stationary_amp * np.exp(1j * 2 * np.pi * args.f0 * t)
 
     iq_move, f_obs = simulate_doppler(
@@ -93,7 +106,7 @@ def build_scene_components(args, t: np.ndarray) -> tuple[np.ndarray, np.ndarray,
         f0=args.f0,
         v=args.v,
         closest_approach=args.d0,
-        snr_db=200.0,  # produce near-noiseless moving tone; we'll add noise later
+        snr_db=200.0,  # near-noiseless moving tone; noise is added later
         drone_mode=args.drone,
         fm_depth=args.fm_depth,
         fm_rate=args.fm_rate,
@@ -103,7 +116,9 @@ def build_scene_components(args, t: np.ndarray) -> tuple[np.ndarray, np.ndarray,
     )
     moving = args.moving_amp * iq_move
 
-    blade_mod = args.blade_mod_hz * np.sin(2 * np.pi * args.blade_rot_hz * t)
+    blade_mod = args.blade_mod_hz * np.sin(
+        2 * np.pi * args.blade_rot_hz * t
+    )
     phase_blades = 2 * np.pi * np.cumsum(args.f0 + blade_mod) / args.fs
     blades = args.blades_amp * np.exp(1j * phase_blades)
 
@@ -115,11 +130,17 @@ def add_overall_noise(iq: np.ndarray, snr_db: float) -> np.ndarray:
     sig_power = np.mean(np.abs(iq) ** 2)
     snr_linear = 10 ** (snr_db / 10.0)
     noise_power = sig_power / snr_linear
-    noise = np.sqrt(noise_power / 2) * (np.random.normal(size=iq.shape) + 1j * np.random.normal(size=iq.shape))
+    noise = np.sqrt(noise_power / 2) * (
+        np.random.normal(size=iq.shape) + 1j * np.random.normal(size=iq.shape)
+    )
     return (iq + noise).astype(np.complex64)
 
 
-def obs_freq_trace_khz(f_obs_hz: np.ndarray, times: np.ndarray, fs: int) -> np.ndarray:
+def obs_freq_trace_khz(
+    f_obs_hz: np.ndarray,
+    times: np.ndarray,
+    fs: int,
+) -> np.ndarray:
     obs_f_khz = np.empty(times.shape[0], dtype=np.float64)
     for i, ft in enumerate(times):
         idx = int(ft * fs)

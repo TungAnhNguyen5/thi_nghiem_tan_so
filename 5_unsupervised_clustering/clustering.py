@@ -23,13 +23,20 @@ def fit_clusterer(
     if algorithm == "kmeans":
         if cluster_count is None:
             raise ValueError("cluster_count is required for kmeans")
-        clusterer = KMeans(n_clusters=cluster_count, random_state=random_state, n_init=10)
+        clusterer = KMeans(
+            n_clusters=cluster_count,
+            random_state=random_state,
+            n_init=10,
+        )
         return clusterer.fit_predict(features)
 
     if algorithm == "gmm":
         if cluster_count is None:
             raise ValueError("cluster_count is required for gmm")
-        clusterer = GaussianMixture(n_components=cluster_count, random_state=random_state)
+        clusterer = GaussianMixture(
+            n_components=cluster_count,
+            random_state=random_state,
+        )
         return clusterer.fit_predict(features)
 
     if algorithm == "dbscan":
@@ -38,7 +45,10 @@ def fit_clusterer(
 
     if algorithm == "hdbscan":
         if hdbscan is None:
-            raise RuntimeError("hdbscan is not installed; install it separately to use this algorithm")
+            raise RuntimeError(
+                "hdbscan is not installed; install it separately to use "
+                "this algorithm"
+            )
         clusterer = hdbscan.HDBSCAN(min_cluster_size=min_samples)
         return clusterer.fit_predict(features)
 
@@ -61,10 +71,17 @@ def choose_cluster_count(
 
     for cluster_count in range(minimum_k, upper_bound + 1):
         if algorithm == "kmeans":
-            clusterer = KMeans(n_clusters=cluster_count, random_state=random_state, n_init=10)
+            clusterer = KMeans(
+                n_clusters=cluster_count,
+                random_state=random_state,
+                n_init=10,
+            )
             labels = clusterer.fit_predict(features)
         else:
-            clusterer = GaussianMixture(n_components=cluster_count, random_state=random_state)
+            clusterer = GaussianMixture(
+                n_components=cluster_count,
+                random_state=random_state,
+            )
             labels = clusterer.fit_predict(features)
 
         if len(np.unique(labels)) < 2:
@@ -85,5 +102,8 @@ def scale_features(features: np.ndarray) -> np.ndarray:
 
 def format_cluster_summary(labels: np.ndarray) -> str:
     unique, counts = np.unique(labels, return_counts=True)
-    parts = [f"{int(label)}:{int(count)}" for label, count in zip(unique, counts)]
+    parts = [
+        f"{int(label)}:{int(count)}"
+        for label, count in zip(unique, counts)
+    ]
     return ", ".join(parts)

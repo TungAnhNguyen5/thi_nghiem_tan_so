@@ -6,7 +6,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def compute_spectrogram(iq: np.ndarray, fs: int, nfft: int = 2048, hop: int = 256):
+def compute_spectrogram(
+    iq: np.ndarray,
+    fs: int,
+    nfft: int = 2048,
+    hop: int = 256,
+):
     if iq.size < nfft:
         raise ValueError("IQ capture is too short for the selected FFT size")
 
@@ -17,7 +22,7 @@ def compute_spectrogram(iq: np.ndarray, fs: int, nfft: int = 2048, hop: int = 25
 
     for index in range(frame_count):
         start = index * hop
-        frame = iq[start : start + nfft]
+        frame = iq[start:start + nfft]
         spectrum = np.fft.fftshift(np.fft.fft(frame * window, n=nfft))
         spec[:, index] = 20 * np.log10(np.abs(spectrum) + 1e-12)
 
@@ -26,7 +31,13 @@ def compute_spectrogram(iq: np.ndarray, fs: int, nfft: int = 2048, hop: int = 25
     return spec, frequencies, times
 
 
-def plot_spectrogram(spec, freqs, times, output_path: Path, title: str = "Doppler Spectrogram"):
+def plot_spectrogram(
+    spec,
+    freqs,
+    times,
+    output_path: Path,
+    title: str = "Doppler Spectrogram",
+):
     plt.close("all")
     fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -47,13 +58,16 @@ def plot_spectrogram(spec, freqs, times, output_path: Path, title: str = "Dopple
     fig.savefig(output_path, dpi=300, bbox_inches="tight")
 
 
-def _save_animation_frames(frames: list[np.ndarray], output_path: Path, fps: int) -> None:
+def _save_animation_frames(
+    frames: list[np.ndarray], output_path: Path, fps: int
+) -> None:
     """Save RGB frames to GIF or MP4 based on the output suffix."""
     try:
         import imageio
     except Exception:  # pragma: no cover - optional dependency
         raise RuntimeError(
-            "imageio is required to create animations; install it with `pip install imageio pillow imageio-ffmpeg`"
+            "imageio is required to create animations; install it with "
+            "`pip install imageio pillow imageio-ffmpeg`"
         )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -82,7 +96,9 @@ def _save_animation_frames(frames: list[np.ndarray], output_path: Path, fps: int
                 writer.append_data(frame)
         return
 
-    raise ValueError(f"Unsupported animation output format: {suffix}. Use .gif or .mp4")
+    raise ValueError(
+        f"Unsupported animation output format: {suffix}. Use .gif or .mp4"
+    )
 
 
 def _render_spectrogram_frames(
@@ -134,7 +150,9 @@ def _render_spectrogram_frames(
         trace_times = overlay.get("trace_times")
         trace_freq_khz = overlay.get("trace_freq_khz")
         if trace_times is None or trace_freq_khz is None:
-            raise ValueError("trace overlay requires trace_times and trace_freq_khz")
+            raise ValueError(
+                "trace overlay requires trace_times and trace_freq_khz"
+            )
         if trace_freq_khz.shape[0] != n_frames:
             trace_freq_khz = np.interp(
                 np.linspace(0, trace_freq_khz.shape[0] - 1, n_frames),
@@ -173,7 +191,13 @@ def _render_spectrogram_frames(
     return frames
 
 
-def animate_spectrogram(spec, freqs, times, output_path: Path, fps: int = 20) -> None:
+def animate_spectrogram(
+    spec,
+    freqs,
+    times,
+    output_path: Path,
+    fps: int = 20,
+) -> None:
     frames = _render_spectrogram_frames(spec, freqs, times, overlay=None)
     _save_animation_frames(frames, output_path, fps=fps)
 
@@ -200,13 +224,21 @@ def animate_spectrogram_overlay(
     _save_animation_frames(frames, output_path, fps=fps)
 
 
-def animate_spectrogram_compare(specs, freqs, times, output_path: Path, fps: int = 20, titles=None) -> None:
+def animate_spectrogram_compare(
+    specs,
+    freqs,
+    times,
+    output_path: Path,
+    fps: int = 20,
+    titles=None,
+) -> None:
     """Create side-by-side comparison animation for a list of spectrograms."""
     try:
         import imageio  # noqa: F401
     except Exception:  # pragma: no cover
         raise RuntimeError(
-            "imageio is required to create animations; install it with `pip install imageio pillow imageio-ffmpeg`"
+            "imageio is required to create animations; install it with "
+            "`pip install imageio pillow imageio-ffmpeg`"
         )
 
     n = len(specs)
