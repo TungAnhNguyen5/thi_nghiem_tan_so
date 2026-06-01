@@ -28,7 +28,7 @@ def generate_tone(
     amplitude: float = 1.0,
 ) -> np.ndarray:
     t = np.arange(0, duration_s, 1 / fs)
-    return (amplitude * 
+    return (amplitude *
             np.exp(1j * 2 * np.pi * carrier_hz * t)
             ).astype(np.complex64)
 

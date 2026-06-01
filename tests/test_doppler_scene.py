@@ -16,9 +16,9 @@ def run_script(
     if args:
         cmd += args
     return subprocess.run(
-        cmd, 
+        cmd,
         env=env,
-        stdout=subprocess.PIPE, 
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
         )
 
