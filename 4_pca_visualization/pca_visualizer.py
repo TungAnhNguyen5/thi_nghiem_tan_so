@@ -71,4 +71,5 @@ plt.legend()
 plt.grid(True)
 plt.tight_layout()
 plt.savefig("pca_clusters.png", dpi=300)
+
 plt.show()

@@ -16,7 +16,7 @@ from clustering import (  # noqa: E402
     fit_clusterer,
     scale_features,
 )
-from features import FEATURE_NAMES, build_feature_matrix  # noqa: E402
+from features import FEATURE_NAMES, build_feature_matrix  # noqa: F401,E402
 from io_utils import (  # noqa: E402
     load_iq,
     resolve_input_paths,

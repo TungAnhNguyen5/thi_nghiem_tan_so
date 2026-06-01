@@ -8,10 +8,34 @@ duration = 1.0     # seconds
 # Baseband proxy for multiple drones: each source has a burst window,
 # a small frequency offset, and a little frequency drift.
 drone_sources = [
-	{"center_hz": 120, "amplitude": 1.0, "start": 0.10, "end": 0.45, "drift_hz": 18},
-	{"center_hz": 260, "amplitude": 0.85, "start": 0.22, "end": 0.72, "drift_hz": -12},
-	{"center_hz": 410, "amplitude": 0.75, "start": 0.50, "end": 0.90, "drift_hz": 22},
-	{"center_hz": 610, "amplitude": 0.65, "start": 0.12, "end": 0.35, "drift_hz": 8},
+    {
+        "center_hz": 120,
+        "amplitude": 1.0,
+        "start": 0.10,
+        "end": 0.45,
+        "drift_hz": 18,
+    },
+    {
+        "center_hz": 260,
+        "amplitude": 0.85,
+        "start": 0.22,
+        "end": 0.72,
+        "drift_hz": -12,
+    },
+    {
+        "center_hz": 410,
+        "amplitude": 0.75,
+        "start": 0.50,
+        "end": 0.90,
+        "drift_hz": 22,
+    },
+    {
+        "center_hz": 610,
+        "amplitude": 0.65,
+        "start": 0.12,
+        "end": 0.35,
+        "drift_hz": 8,
+    },
 ]
 
 # Time vector
@@ -20,14 +44,16 @@ t = np.linspace(0, duration, int(fs * duration), endpoint=False)
 # Generate a bursty multi-source signal
 signal = np.zeros_like(t)
 for source in drone_sources:
-	burst = np.where((t >= source["start"]) & (t <= source["end"]), 1.0, 0.0)
-	window = np.hanning(burst.size)
-	burst *= window
-	center = source["center_hz"]
-	drift = source["drift_hz"]
-	instantaneous_frequency = center + drift * np.sin(2 * np.pi * 2 * t)
-	phase = 2 * np.pi * np.cumsum(instantaneous_frequency) / fs
-	signal += source["amplitude"] * burst * np.sin(phase)
+    burst = np.where(
+        (t >= source["start"]) & (t <= source["end"]), 1.0, 0.0
+    )
+    window = np.hanning(burst.size)
+    burst *= window
+    center = source["center_hz"]
+    drift = source["drift_hz"]
+    instantaneous_frequency = center + drift * np.sin(2 * np.pi * 2 * t)
+    phase = 2 * np.pi * np.cumsum(instantaneous_frequency) / fs
+    signal += source["amplitude"] * burst * np.sin(phase)
 
 noise = 0.20 * np.random.normal(0, 1, len(signal))
 noisy_signal = signal + noise

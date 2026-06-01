@@ -7,15 +7,26 @@ import numpy as np
 
 
 def load_module():
-    module_path = Path(__file__).resolve().parents[1] / "5_unsupervised_clustering" / "main.py"
-    spec = importlib.util.spec_from_file_location("unsupervised_clustering_main", module_path)
+    module_path = (
+        Path(__file__).resolve().parents[1]
+        / "5_unsupervised_clustering"
+        / "main.py"
+    )
+    spec = importlib.util.spec_from_file_location(
+        "unsupervised_clustering_main", module_path
+    )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
 
 
-def generate_tone(duration_s: float, fs: int, carrier_hz: float, amplitude: float = 1.0) -> np.ndarray:
+def generate_tone(
+    duration_s: float,
+    fs: int,
+    carrier_hz: float,
+    amplitude: float = 1.0,
+) -> np.ndarray:
     t = np.arange(0, duration_s, 1 / fs)
     return (amplitude * np.exp(1j * 2 * np.pi * carrier_hz * t)).astype(np.complex64)
 

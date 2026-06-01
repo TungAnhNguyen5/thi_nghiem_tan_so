@@ -18,6 +18,6 @@ def window_iq(
         )
 
     return [
-        iq[start : start + window_size]
+        iq[start:start + window_size]
         for start in range(0, iq.size - window_size + 1, hop_size)
     ]

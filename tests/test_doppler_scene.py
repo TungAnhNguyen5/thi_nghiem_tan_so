@@ -6,7 +6,10 @@ import sys
 from pathlib import Path
 
 
-def run_script(script_path: Path, args: list[str] | None = None) -> subprocess.CompletedProcess:
+def run_script(
+    script_path: Path,
+    args: list[str] | None = None,
+) -> subprocess.CompletedProcess:
     env = os.environ.copy()
     env["MPLBACKEND"] = "Agg"
     cmd = [sys.executable, str(script_path)]
@@ -16,7 +19,11 @@ def run_script(script_path: Path, args: list[str] | None = None) -> subprocess.C
 
 
 def test_doppler_scene_creates_png(tmp_path: Path) -> None:
-    script = Path(__file__).resolve().parents[1] / "6_doppler_simulation" / "doppler_simulator.py"
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "6_doppler_simulation"
+        / "doppler_simulator.py"
+    )
     out = tmp_path / "doppler_test.png"
     if out.exists():
         out.unlink()
@@ -53,14 +60,20 @@ def test_doppler_scene_creates_png(tmp_path: Path) -> None:
 
     if completed.returncode != 0:
         raise RuntimeError(
-            f"Doppler script failed:\nstdout={completed.stdout.decode()}\nstderr={completed.stderr.decode()}"
+            "Doppler script failed:\n"
+            f"stdout={completed.stdout.decode()}\n"
+            f"stderr={completed.stderr.decode()}"
         )
 
     assert out.exists() and out.stat().st_size > 0
 
 
 def test_doppler_scene_saves_iq(tmp_path: Path) -> None:
-    script = Path(__file__).resolve().parents[1] / "6_doppler_simulation" / "doppler_simulator.py"
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "6_doppler_simulation"
+        / "doppler_simulator.py"
+    )
     out_dat = tmp_path / "doppler_test.iq.dat"
     out_png = tmp_path / "doppler_test2.png"
 
@@ -88,7 +101,9 @@ def test_doppler_scene_saves_iq(tmp_path: Path) -> None:
 
     if completed.returncode != 0:
         raise RuntimeError(
-            f"Doppler script failed when saving IQ:\nstdout={completed.stdout.decode()}\nstderr={completed.stderr.decode()}"
+            "Doppler script failed when saving IQ:\n"
+            f"stdout={completed.stdout.decode()}\n"
+            f"stderr={completed.stderr.decode()}"
         )
 
     assert out_png.exists() and out_png.stat().st_size > 0
