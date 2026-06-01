@@ -14,7 +14,9 @@ def burst_signal(
 ) -> np.ndarray:
     window = np.where((t >= start) & (t <= end), 1.0, 0.0)
     window *= np.hanning(t.size)
-    instantaneous_frequency = carrier_hz + drift_hz * np.sin(2 * np.pi * 1.5 * t)
+    instantaneous_frequency = carrier_hz + drift_hz * np.sin(
+        2 * np.pi * 1.5 * t
+    )
     phase = 2 * np.pi * np.cumsum(instantaneous_frequency) / fs
     return amplitude * window * np.exp(1j * phase)
 
@@ -24,8 +26,10 @@ def main() -> None:
     duration = 0.25
     t = np.arange(0, duration, 1 / fs)
 
-    # A compact baseband example that looks more like overlapping drone-like emitters:
-    # short bursts, small frequency offsets, mild drift, and background noise.
+    # A compact baseband example that looks more like
+    # overlapping drone-like emitters:
+    # short bursts, small frequency offsets,
+    # mild drift, and background noise.
     signal = (
         burst_signal(t, fs, 0.02, 0.09, 110_000, 2_000, 0.95)
         + burst_signal(t, fs, 0.06, 0.16, 245_000, -3_000, 0.80)
@@ -33,8 +37,10 @@ def main() -> None:
     )
 
     carrier_leak = 0.12 * np.exp(1j * 2 * np.pi * 12_000 * t)
+
     noise = 0.18 * (
-        np.random.normal(0, 1, t.size) + 1j * np.random.normal(0, 1, t.size)
+        np.random.normal(0, 1, t.size)
+        + 1j * np.random.normal(0, 1, t.size)
     )
     iq = (signal + carrier_leak + noise).astype(np.complex64)
 

@@ -28,16 +28,20 @@ def generate_tone(
     amplitude: float = 1.0,
 ) -> np.ndarray:
     t = np.arange(0, duration_s, 1 / fs)
-    return (amplitude * np.exp(1j * 2 * np.pi * carrier_hz * t)).astype(np.complex64)
+    return (amplitude * 
+            np.exp(1j * 2 * np.pi * carrier_hz * t)
+            ).astype(np.complex64)
 
 
 def test_window_features_shape() -> None:
     module = load_module()
     fs = 1_000_000
     rng = np.random.default_rng(123)
-    iq = generate_tone(0.02, fs, 120_000) + 0.05 * (
-        rng.normal(0, 1, int(0.02 * fs)) + 1j * rng.normal(0, 1, int(0.02 * fs))
+    noise = 0.05 * (
+        rng.normal(0, 1, int(0.02 * fs))
+        + 1j * rng.normal(0, 1, int(0.02 * fs))
     )
+    iq = generate_tone(0.02, fs, 120_000) + noise
 
     features, frame_indices, frame_times = module.build_feature_matrix(
         iq.astype(np.complex64),

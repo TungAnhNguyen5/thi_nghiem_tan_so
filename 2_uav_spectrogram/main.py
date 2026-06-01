@@ -95,7 +95,12 @@ def main() -> None:
             "files in the current folder"
         ),
     )
-    parser.add_argument("--fs", type=int, default=1_000_000, help="Sample rate in Hz")
+    parser.add_argument(
+        "--fs", 
+        type=int, 
+        default=1_000_000, 
+        help="Sample rate in Hz"
+    )
     parser.add_argument(
         "--output-dir",
         default="output",

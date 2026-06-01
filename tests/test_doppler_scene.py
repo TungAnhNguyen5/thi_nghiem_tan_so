@@ -15,7 +15,12 @@ def run_script(
     cmd = [sys.executable, str(script_path)]
     if args:
         cmd += args
-    return subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return subprocess.run(
+        cmd, 
+        env=env,
+        stdout=subprocess.PIPE, 
+        stderr=subprocess.PIPE
+        )
 
 
 def test_doppler_scene_creates_png(tmp_path: Path) -> None:
